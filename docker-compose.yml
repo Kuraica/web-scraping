@@ -9,18 +9,23 @@ services:
             - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
         networks:
             - laravel
+        depends_on:
+            - db
+            - redis
 
     webserver:
         image: nginx:alpine
         container_name: nginx
         restart: unless-stopped
         ports:
-            - "4040:80"  # Promenjen port
+            - "4040:80"
         volumes:
             - .:/var/www
             - ./nginx/conf.d:/etc/nginx/conf.d
         networks:
             - laravel
+        depends_on:
+            - app
 
     db:
         image: mysql:5.7
@@ -52,16 +57,6 @@ services:
         image: redis:alpine
         ports:
             - "6379:6379"
-        networks:
-            - laravel
-
-    queue:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
-        volumes:
-            - .:/var/www
         networks:
             - laravel
 

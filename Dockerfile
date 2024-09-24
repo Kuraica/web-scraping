@@ -23,18 +23,8 @@ RUN apt-get update && apt-get install -y \
     libnss3 \
     libgconf-2-4 \
     wget \
+    supervisor \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Install Google Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && dpkg -i google-chrome-stable_current_amd64.deb || apt-get -fy install \
-    && rm google-chrome-stable_current_amd64.deb
-
-# Install ChromeDriver
-RUN wget -N https://chromedriver.storage.googleapis.com/$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip \
-    && unzip chromedriver_linux64.zip -d /usr/local/bin/ \
-    && rm chromedriver_linux64.zip \
-    && chmod +x /usr/local/bin/chromedriver
 
 # Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
@@ -53,9 +43,9 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Switch to the www-data user
-USER www-data
+# Copy Supervisor configuration
+COPY ./docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expose port 9000 and start php-fpm server
+# Expose port 9000 and start supervisor
 EXPOSE 9000
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
