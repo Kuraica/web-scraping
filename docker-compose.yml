@@ -19,9 +19,11 @@ services:
         restart: unless-stopped
         ports:
             - "4040:80"
+            - "4043:443" # Dodaj ovaj red za HTTPS port
         volumes:
             - .:/var/www
             - ./nginx/conf.d:/etc/nginx/conf.d
+            - ./docker/nginx/certs:/etc/nginx/certs # Dodaj volume za SSL sertifikate
         networks:
             - laravel
         depends_on:

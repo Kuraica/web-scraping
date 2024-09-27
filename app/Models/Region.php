@@ -23,4 +23,13 @@ class Region extends Model
     // Ako koristite UUID za atlasId, ali primarni ključ je auto-increment
     public $incrementing = true;
     protected $keyType = 'int'; // Po defaultu, ovo je 'int', može ostati
+
+    public function formatRegionName($name): string
+    {
+        $name = strtolower($name);
+        $name = str_replace(', ', '-', $name);
+        $name = str_replace(' ', '-', $name);
+
+        return $name;
+    }
 }

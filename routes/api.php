@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AgentsController;
 use App\Http\Controllers\GetRegionsController;
 use App\Http\Controllers\ProcessData;
+use App\Http\Controllers\ProcessedUrlsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +24,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/send-data', [ProcessData::class, 'process']);
 Route::get('/test-get-region/{query}', [GetRegionsController::class, 'check']);
+Route::get('/get-next-region', [GetRegionsController::class, 'getNextRegion']);
+Route::get('/check-agent/{agent}', [AgentsController::class, 'checkAgent']);
+Route::post('/update-process', [ProcessedUrlsController::class, 'update']);

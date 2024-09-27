@@ -19,7 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'chrome-extension://*',
+        'http://localhost:*',
+        'https://www.realestate.com.au',
+        'https://f998-95-180-49-21.ngrok-free.app'
+    ],
 
     'allowed_origins_patterns' => [],
 
