@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('agencies', function (Blueprint $table) {
             $table->id();
-            $table->uuid('agency_url')->unique();
+            $table->string('agency_url', 255)->unique();
             $table->string('full_address');
             $table->string('address')->nullable();
             $table->string('state')->nullable();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\AgentsController;
 use App\Http\Controllers\GetRegionsController;
 use App\Http\Controllers\ProcessData;
@@ -27,3 +28,5 @@ Route::get('/test-get-region/{query}', [GetRegionsController::class, 'check']);
 Route::get('/get-next-region', [GetRegionsController::class, 'getNextRegion']);
 Route::get('/check-agent/{agent}', [AgentsController::class, 'checkAgent']);
 Route::post('/update-process', [ProcessedUrlsController::class, 'update']);
+Route::post('/check-agency', [AgencyController::class, 'checkAgency']);
+
