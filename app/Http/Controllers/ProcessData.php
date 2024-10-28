@@ -23,61 +23,75 @@ class ProcessData extends Controller
             // Start a database transaction
             DB::beginTransaction();
 
-            // Extract the agency URL fragment from the full URL
+            // Extract agency data
             $agencyUrl = $validatedData['agency_url'];
-            $urlFragment = $this->extractAgencyUrlFragment($agencyUrl);
+            $fullAddress = $validatedData['agency_address'] ?? '';
+            $addressParts = explode(',', $fullAddress);
+
+            $address = trim($addressParts[0] ?? '');
+            $statePostcode = trim($addressParts[1] ?? '');
+
+            // Assuming state and postcode are separated by space
+            if ($statePostcode) {
+                $statePostcodeParts = explode(' ', $statePostcode);
+                $state = trim($statePostcodeParts[0] ?? '');
+                $postcode = trim($statePostcodeParts[1] ?? '');
+            } else {
+                $state = null;
+                $postcode = null;
+            }
+
+            // Agency data
+            $agencyData = [
+                'agency_url' => $agencyUrl,
+                'full_address' => $fullAddress,
+                'address' => $address,
+                'state' => $state,
+                'postcode' => $postcode,
+                'number_of_people' => $validatedData['number_of_people'] ?? null,
+                'properties_sold' => $validatedData['properties_sold'] ?? null,
+                'properties_leased' => $validatedData['properties_leased'] ?? null,
+            ];
 
             // Check if 'agency_id' is provided
             if (!empty($validatedData['agency_id'])) {
-                // Agency exists, retrieve it by ID
+                // Agency exists, retrieve it by ID and update it
                 $agency = Agency::find($validatedData['agency_id']);
-                Log::info('Existing agency found with ID: ' . $agency->id);
+                $agency->update($agencyData);
+                Log::info('Existing agency updated with ID: ' . $agency->id);
             } else {
-                // Parse agency address
-                $fullAddress = $validatedData['agency_address'] ?? '';
-                $addressParts = explode(',', $fullAddress);
-
-                $address = trim($addressParts[0] ?? '');
-                $statePostcode = trim($addressParts[1] ?? '');
-
-                // Assuming state and postcode are separated by space
-                if ($statePostcode) {
-                    $statePostcodeParts = explode(' ', $statePostcode);
-                    $state = trim($statePostcodeParts[0] ?? '');
-                    $postcode = trim($statePostcodeParts[1] ?? '');
-                } else {
-                    $state = null;
-                    $postcode = null;
-                }
-
-                // Find or create the agency using the extracted URL fragment
-                $agency = Agency::firstOrCreate(
-                    ['agency_url' => $urlFragment], // Save only the URL fragment
-                    [
-                        'full_address' => $fullAddress,
-                        'address' => $address,
-                        'state' => $state,
-                        'postcode' => $postcode,
-                    ]
+                // Find or create the agency using the agency_url
+                $agency = Agency::updateOrCreate(
+                    ['agency_url' => $agencyUrl], // Unique identifier
+                    $agencyData
                 );
-                Log::info('Agency created or found: ' . $agency->id);
+                Log::info('Agency created or found with ID: ' . $agency->id);
             }
 
+            // Prepare agent data
+            $agentData = [
+                'agent_id' => $validatedData['rea_id'],
+                'full_name' => $validatedData['candidate_name'],
+                'first_name' => $validatedData['first_name'],
+                'last_name' => $validatedData['last_name'],
+                'mobile' => $validatedData['mobile'] ?? null,
+                'email' => $validatedData['email'] ?? null,
+                'position' => $validatedData['position'] ?? null,
+                'job_title' => $validatedData['job_title'] ?? null,
+                'years_experience' => $validatedData['years_experience'] ?? null,
+                'median_price_overall' => $validatedData['median_price'] ?? null,
+                'sales_count_as_lead' => $validatedData['sales_count_as_lead'] ?? null,
+                'secondary_sales' => $validatedData['secondary_sales'] ?? null,
+                'number_of_5_star_reviews' => $validatedData['number_of_5_star_reviews'] ?? null,
+                'oldest_transaction_date' => $validatedData['oldest_transaction_date'] ?? null,
+                'latest_transaction_date' => $validatedData['latest_transaction_date'] ?? null,
+                'top_suburb_sales' => $validatedData['top_suburb_sales'] ?? null,
+                'rea_link' => $validatedData['rea_link'],
+                'agency_id' => $agency->id,
+            ];
+
             // Create the agent
-            $agent = Agent::create([
-                                       'agent_id' => $validatedData['rea_id'],
-                                       'full_name' => $validatedData['candidate_name'],
-                                       'first_name' => $validatedData['first_name'],
-                                       'last_name' => $validatedData['last_name'],
-                                       'mobile' => $validatedData['mobile'] ?? null,
-                                       'email' => null, // Email not provided
-                                       'position' => $validatedData['position'] ?? null,
-                                       'job_title' => $validatedData['job_title'] ?? null,
-                                       'median_price_overall' => $validatedData['median_price'] ?? null,
-                                       'sales_count_as_lead' => $validatedData['sales_count_as_lead'] ?? null,
-                                       'rea_link' => $validatedData['rea_link'],
-                                       'agency_id' => $agency->id,
-                                   ]);
+            $agent = Agent::create($agentData);
             Log::info('Agent created successfully with ID: ' . $agent->id);
 
             // Commit the transaction
@@ -87,12 +101,14 @@ class ProcessData extends Controller
             return response()->json(['success' => true, 'message' => 'Agent and agency saved successfully.'], 200);
 
         } catch (ValidationException $e) {
+            // Rollback the transaction on validation error
+            DB::rollBack();
             // Return validation error response in JSON format
             return response()->json(['success' => false, 'errors' => $e->errors(), 'message' => 'Validation failed'], 422);
 
         } catch (\Exception $e) {
             // Rollback the transaction on error
-            DB::rollback();
+            DB::rollBack();
 
             // Log the error for debugging
             Log::error('Error saving agent and agency: ' . $e->getMessage());
@@ -117,15 +133,24 @@ class ProcessData extends Controller
                                       'first_name' => 'required|string',
                                       'last_name' => 'required|string',
                                       'mobile' => 'nullable|string|max:20',
+                                      'email' => 'nullable|string|email',
                                       'position' => 'nullable|string',
                                       'job_title' => 'nullable|string',
+                                      'years_experience' => 'nullable|string',
                                       'median_price' => 'nullable|string',
                                       'sales_count_as_lead' => 'nullable|string',
+                                      'secondary_sales' => 'nullable|string',
+                                      'number_of_5_star_reviews' => 'nullable|integer',
+                                      'oldest_transaction_date' => 'nullable|date',
+                                      'latest_transaction_date' => 'nullable|date',
+                                      'top_suburb_sales' => 'nullable|string',
                                       'rea_link' => 'required|string',
                                       'agency_url' => 'required|string', // Full URL provided here
                                       'agency_address' => 'nullable|string',
-                                      'agency_url_fragment' => 'nullable|string',
                                       'agency_id' => 'nullable|integer|exists:agencies,id',
+                                      'number_of_people' => 'nullable|integer',
+                                      'properties_sold' => 'nullable|integer',
+                                      'properties_leased' => 'nullable|integer',
                                   ]);
     }
 

@@ -19,8 +19,14 @@ class Agent extends Model
         'email',
         'position',
         'job_title',
+        'years_experience',
         'median_price_overall',
         'sales_count_as_lead',
+        'secondary_sales',
+        'number_of_5_star_reviews',
+        'oldest_transaction_date',
+        'latest_transaction_date',
+        'top_suburb_sales',
         'rea_link',
         'agency_id'
     ];

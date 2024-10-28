@@ -16,8 +16,11 @@ return new class extends Migration
             $table->string('agency_url', 255)->unique();
             $table->string('full_address');
             $table->string('address')->nullable();
-            $table->string('state')->nullable();
-            $table->string('postcode')->nullable();
+            $table->string('state', 50)->nullable();
+            $table->string('postcode', 20)->nullable();
+            $table->integer('number_of_people')->nullable();
+            $table->integer('properties_sold')->nullable();
+            $table->integer('properties_leased')->nullable();
             $table->timestamps();
         });
     }

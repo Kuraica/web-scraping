@@ -15,7 +15,10 @@ class Agency extends Model
         'full_address',
         'address',
         'state',
-        'postcode'
+        'postcode',
+        'number_of_people',
+        'properties_sold',
+        'properties_leased',
     ];
 
     public function agents(): HasMany

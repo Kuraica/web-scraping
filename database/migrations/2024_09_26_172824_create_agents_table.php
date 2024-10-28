@@ -20,13 +20,22 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('position')->nullable();
             $table->string('job_title')->nullable();
+            $table->string('years_experience')->nullable();
             $table->string('median_price_overall')->nullable();
             $table->string('sales_count_as_lead')->nullable();
+            $table->string('secondary_sales')->nullable();
+            $table->integer('number_of_5_star_reviews')->nullable();
+            $table->date('oldest_transaction_date')->nullable();
+            $table->date('latest_transaction_date')->nullable();
+            $table->string('top_suburb_sales')->nullable();
             $table->string('rea_link');
+
+            // Foreign key to agencies table
             $table->unsignedBigInteger('agency_id');
             $table->foreign('agency_id')
                 ->references('id')
                 ->on('agencies');
+
             $table->timestamps();
         });
     }

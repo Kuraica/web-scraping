@@ -13,25 +13,33 @@
 
 <script>
     function startScraping() {
-        const extensionId = 'dohnmlpcdjljjpffojlfckhiijogihba'; // Zameni sa tvojim extension ID
+        const extensionId = 'dohnmlpcdjljjpffojlfckhiijogihba';
 
-        // Pokušaj slanja poruke ekstenziji
+        // Send message to the extension to start scraping
         chrome.runtime.sendMessage(extensionId, { action: 'checkExtension' }, function(response) {
             if (chrome.runtime.lastError) {
-                console.error('Ekstenzija nije pronađena ili nije aktivna.');
-                alert('Ekstenzija nije pronađena ili nije aktivna.');
+                console.error('Extension not found or not active.');
+                alert('Extension not found or not active.');
             } else {
                 console.log(response.message);
                 alert(response.message);
-
-                // Logika za početak scraping-a (pozivanje API-ja ili slanje AJAX zahteva ka serveru)
             }
         });
     }
 
     function stopScraping() {
-        alert('Stopping data scraping...');
-        // Ovdje možeš dodati logiku za stop scraping, poput AJAX poziva ka serveru
+        const extensionId = 'dohnmlpcdjljjpffojlfckhiijogihba';
+
+        // Send message to the extension to stop scraping
+        chrome.runtime.sendMessage(extensionId, { action: 'stopScraping' }, function(response) {
+            if (chrome.runtime.lastError) {
+                console.error('Extension not found or not active.');
+                alert('Extension not found or not active.');
+            } else {
+                console.log(response.message);
+                alert(response.message);
+            }
+        });
     }
 </script>
 </body>
