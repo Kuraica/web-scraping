@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AgentsController
 {
@@ -13,9 +14,9 @@ class AgentsController
         return view('scraping');
     }
 
-    public function checkAgent(string $agent)
+    public function checkAgent(string $agentId)
     {
-        $agentId = substr($agent, strrpos($agent, '-') + 1);
+        Log::info('Agent id za proveru: ', [$agentId]);
 
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 

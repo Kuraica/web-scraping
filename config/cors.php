@@ -23,7 +23,7 @@ return [
         'chrome-extension://*',
         'http://localhost:*',
         'https://www.realestate.com.au',
-        'https://74f6-95-180-91-53.ngrok-free.app'
+        'https://1240-95-180-91-53.ngrok-free.app'
     ],
 
     'allowed_origins_patterns' => [],

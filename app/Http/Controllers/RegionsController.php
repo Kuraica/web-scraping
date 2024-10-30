@@ -7,7 +7,7 @@ use App\Repositories\RegionRepository;
 use App\Services\RealEstateService;
 use Illuminate\Http\Request;
 
-class GetRegionsController extends Controller
+class RegionsController extends Controller
 {
 
     public function __construct(
@@ -39,5 +39,10 @@ class GetRegionsController extends Controller
                                         'message' => 'No region found',
                                     ]);
         }
+    }
+
+    public function updateProcessedRegion(Region $region)
+    {
+        dd($region);
     }
 }

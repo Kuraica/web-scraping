@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('regions', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
-            $table->uuid('atlasId')->unique(); // Jedinstveni atlasId
+            $table->uuid('atlasId')->unique();
             $table->string('type');
             $table->string('text');
             $table->string('name');

@@ -9,7 +9,6 @@ class Region extends Model
 {
     use HasFactory;
 
-    // Nije potrebno navoditi 'id' jer je auto-increment
     protected $fillable = [
         'atlasId',
         'type',
@@ -20,9 +19,8 @@ class Region extends Model
         'scraped',
     ];
 
-    // Ako koristite UUID za atlasId, ali primarni ključ je auto-increment
     public $incrementing = true;
-    protected $keyType = 'int'; // Po defaultu, ovo je 'int', može ostati
+    protected $keyType = 'int';
 
     public function formatRegionName($name): string
     {

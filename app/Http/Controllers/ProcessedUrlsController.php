@@ -8,9 +8,16 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessedUrlsController
 {
+    /**
+     * POST
+     *
+     * @param string url
+     * @param string page
+     * @param int region_id
+    */
     public function update(Request $request)
     {
-        Log::info('Podaci iz zahteva: ', $request->all());
+        Log::info('ProcessedUrlsController update data: ', $request->all());
 
         $validatedData = $request->validate([
                                                 'url'       => 'required|string',
@@ -18,7 +25,7 @@ class ProcessedUrlsController
                                                 'region_id' => 'required|exists:regions,id',
                                             ]);
 
-        Log::info('Validirani podaci: ', $validatedData);
+        Log::info('Validated data: ', $validatedData);
 
         $processedUrl = ProcessedUrl::create([
                                                  'url'       => $validatedData['url'],
@@ -30,7 +37,7 @@ class ProcessedUrlsController
         return response()->json([
                                     'success' => true,
                                     'data'    => $processedUrl,
-                                    'message' => 'Proces uspešno ažuriran',
+                                    'message' => 'Process updated successful',
                                 ])
             ->header('Access-Control-Allow-Origin', '*');
     }
