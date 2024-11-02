@@ -22,8 +22,8 @@ return new class extends Migration {
             $table->string('job_title')->nullable();
             $table->string('years_experience')->nullable();
             $table->string('median_price_overall')->nullable();
-            $table->string('sales_count_as_lead')->nullable();
-            $table->string('secondary_sales')->nullable();
+            $table->integer('sales_count_as_lead')->nullable();
+            $table->integer('secondary_sales')->nullable();
             $table->integer('number_of_5_star_reviews')->nullable();
             $table->date('oldest_transaction_date')->nullable();
             $table->date('latest_transaction_date')->nullable();

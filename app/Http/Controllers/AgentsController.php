@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\Log;
 class AgentsController
 {
 
-    public function getAgents(Request $request)
+    public function getFirstAgents(Request $request)
     {
-        return view('scraping');
+        return view('scraping-asc');
+    }
+
+    public function getLastAgents(Request $request)
+    {
+        return view('scraping-desc');
     }
 
     public function checkAgent(string $agentId)

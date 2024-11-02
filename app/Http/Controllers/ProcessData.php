@@ -26,19 +26,17 @@ class ProcessData extends Controller
             // Extract agency data
             $agencyUrl = $validatedData['agency_url'];
             $fullAddress = $validatedData['agency_address'] ?? '';
-            $addressParts = explode(',', $fullAddress);
 
-            $address = trim($addressParts[0] ?? '');
-            $statePostcode = trim($addressParts[1] ?? '');
+            $pattern = '/^(.*?),\s*(\w{2})\s*(\d{4})$/';
 
-            // Assuming state and postcode are separated by space
-            if ($statePostcode) {
-                $statePostcodeParts = explode(' ', $statePostcode);
-                $state = trim($statePostcodeParts[0] ?? '');
-                $postcode = trim($statePostcodeParts[1] ?? '');
-            } else {
-                $state = null;
-                $postcode = null;
+            $address = null;
+            $state = null;
+            $postcode = null;
+
+            if (preg_match($pattern, $fullAddress, $matches)) {
+                $address = $matches[1];
+                $state = $matches[2];
+                $postcode = $matches[3];
             }
 
             // Agency data
@@ -138,8 +136,8 @@ class ProcessData extends Controller
                                       'job_title' => 'nullable|string',
                                       'years_experience' => 'nullable|string',
                                       'median_price' => 'nullable|string',
-                                      'sales_count_as_lead' => 'nullable|string',
-                                      'secondary_sales' => 'nullable|string',
+                                      'sales_count_as_lead' => 'nullable|integer',
+                                      'secondary_sales' => 'nullable|integer',
                                       'number_of_5_star_reviews' => 'nullable|integer',
                                       'oldest_transaction_date' => 'nullable|date',
                                       'latest_transaction_date' => 'nullable|date',

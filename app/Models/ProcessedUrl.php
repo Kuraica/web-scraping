@@ -11,6 +11,7 @@ class ProcessedUrl extends Model
     use HasFactory;
 
     protected $fillable = [
+        'order',
         'region_id',
         'url',
         'page'

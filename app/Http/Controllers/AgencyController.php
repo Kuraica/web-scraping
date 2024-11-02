@@ -4,40 +4,54 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Agency;
+use Illuminate\Support\Facades\Log;
 
 class AgencyController extends Controller
 {
     public function checkAgency(Request $request)
     {
-        // Validate the incoming request
-        $validatedData = $request->validate([
-                                                'agency_url' => 'required|string',
-                                            ]);
+        try {
+            // Validate the incoming request
+            $validatedData = $request->validate([
+                'agency_url' => 'required|string',
+            ]);
 
-        // Get the full agency URL from the request
-        $fullAgencyUrl = $validatedData['agency_url'];
+            Log::info('checkAgency validated data: ', [$validatedData]);
 
-        // Extract the fragment from the full URL
-        $agencyUrlFragment = $this->extractAgencyUrlFragment($fullAgencyUrl);
+            // Get the full agency URL from the request
+            $fullAgencyUrl = $validatedData['agency_url'];
 
-        // Check if the agency exists based on the extracted fragment
-        $agency = Agency::where('agency_url', $agencyUrlFragment)->first();
+            // **Ensure the agency_url is compared correctly**
+            $agency = Agency::where('agency_url', $fullAgencyUrl)->first();
 
-        if ($agency) {
-            // Agency exists, return data
+            if ($agency) {
+                Log::info('Found agency: ', [$agency]);
+                // Agency exists, return data
+                return response()->json([
+                    'success' => true,
+                    'exists'  => true,
+                    'data'    => [
+                        'agency_id'         => $agency->id,
+                        'agency_address'    => $agency->full_address,
+                        'number_of_people'  => $agency->number_of_people,
+                        'properties_sold'   => $agency->properties_sold,
+                        'properties_leased' => $agency->properties_leased,
+                    ],
+                ], 200);
+            } else {
+                Log::info('Agency does not exist for: ', [$fullAgencyUrl]);
+                // Agency does not exist
+                return response()->json([
+                    'success' => true,
+                    'exists'  => false,
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in checkAgency: ', [$e->getMessage()]);
             return response()->json([
-                                        'exists' => true,
-                                        'data' => [
-                                            'agency_id' => $agency->id,
-                                            'agency_address' => $agency->full_address,
-                                            'agency_url_fragment' => $agency->agency_url,
-                                        ],
-                                    ], 200);
-        } else {
-            // Agency does not exist
-            return response()->json([
-                                        'exists' => false,
-                                    ], 200);
+                'success' => false,
+                'error'   => $e->getMessage(),
+            ], 500);
         }
     }
 

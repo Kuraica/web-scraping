@@ -7,7 +7,7 @@ use App\Models\Region;
 class RegionRepository
 {
     /**
-     * Get first region were type = 'region' i scraped = 0, sorted by ID-u u ascending order
+     * Get first region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
      *
      * @return Region|null
      */
@@ -16,6 +16,19 @@ class RegionRepository
         return Region::where('type', 'region')
             ->where('scraped', 0)
             ->orderBy('id', 'asc')
+            ->first();
+    }
+
+    /**
+     * Get last region where type = 'region' i scraped = 0, sorted by ID-u in desc order
+     *
+     * @return Region|null
+     */
+    public function getLastUnscrapedRegion()
+    {
+        return Region::where('type', 'region')
+            ->where('scraped', 0)
+            ->orderBy('id', 'desc')
             ->first();
     }
 
