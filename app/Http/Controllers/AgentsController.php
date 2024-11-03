@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AgentsReportMail;
 use App\Models\Agent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Exports\AgentsExport;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AgentsController
 {
@@ -25,10 +29,28 @@ class AgentsController
 
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 
+//        if ($agentExists || in_array($agentId, ['1303653', '3488936'])) {
         if ($agentExists) {
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);
         }
+    }
+
+    /**
+     * Export agents and agency in Excel.
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export()
+    {
+        return Excel::download(new AgentsExport, 'agents_agencies.xlsx');
+    }
+
+    public function sendAgentsReport()
+    {
+        Mail::to('v.kuraica@gmail.com')->send(new AgentsReportMail());
+
+        return "Email sent successfully with the attached Excel report.";
     }
 }

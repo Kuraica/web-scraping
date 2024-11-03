@@ -41,13 +41,13 @@ class ProcessData extends Controller
 
             // Agency data
             $agencyData = [
-                'agency_url' => $agencyUrl,
-                'full_address' => $fullAddress,
-                'address' => $address,
-                'state' => $state,
-                'postcode' => $postcode,
-                'number_of_people' => $validatedData['number_of_people'] ?? null,
-                'properties_sold' => $validatedData['properties_sold'] ?? null,
+                'agency_url'        => $agencyUrl,
+                'full_address'      => $fullAddress,
+                'address'           => $address,
+                'state'             => $state,
+                'postcode'          => $postcode,
+                'number_of_people'  => $validatedData['number_of_people'] ?? null,
+                'properties_sold'   => $validatedData['properties_sold'] ?? null,
                 'properties_leased' => $validatedData['properties_leased'] ?? null,
             ];
 
@@ -68,24 +68,24 @@ class ProcessData extends Controller
 
             // Prepare agent data
             $agentData = [
-                'agent_id' => $validatedData['rea_id'],
-                'full_name' => $validatedData['candidate_name'],
-                'first_name' => $validatedData['first_name'],
-                'last_name' => $validatedData['last_name'],
-                'mobile' => $validatedData['mobile'] ?? null,
-                'email' => $validatedData['email'] ?? null,
-                'position' => $validatedData['position'] ?? null,
-                'job_title' => $validatedData['job_title'] ?? null,
-                'years_experience' => $validatedData['years_experience'] ?? null,
-                'median_price_overall' => $validatedData['median_price'] ?? null,
-                'sales_count_as_lead' => $validatedData['sales_count_as_lead'] ?? null,
-                'secondary_sales' => $validatedData['secondary_sales'] ?? null,
+                'agent_id'                 => $validatedData['rea_id'],
+                'full_name'                => $validatedData['candidate_name'],
+                'first_name'               => $validatedData['first_name'],
+                'last_name'                => $validatedData['last_name'],
+                'mobile'                   => $validatedData['mobile'] ?? null,
+                'email'                    => $validatedData['email'] ?? null,
+                'position'                 => $validatedData['position'] ?? null,
+                'job_title'                => $validatedData['job_title'] ?? null,
+                'years_experience'         => $validatedData['years_experience'] ?? null,
+                'median_price_overall'     => $validatedData['median_price'] ?? null,
+                'sales_count_as_lead'      => $validatedData['sales_count_as_lead'] ?? null,
+                'secondary_sales'          => $validatedData['secondary_sales'] ?? null,
                 'number_of_5_star_reviews' => $validatedData['number_of_5_star_reviews'] ?? null,
-                'oldest_transaction_date' => $validatedData['oldest_transaction_date'] ?? null,
-                'latest_transaction_date' => $validatedData['latest_transaction_date'] ?? null,
-                'top_suburb_sales' => $validatedData['top_suburb_sales'] ?? null,
-                'rea_link' => $validatedData['rea_link'],
-                'agency_id' => $agency->id,
+                'oldest_transaction_date'  => $validatedData['oldest_transaction_date'] ?? null,
+                'latest_transaction_date'  => $validatedData['latest_transaction_date'] ?? null,
+                'top_suburb_sales'         => $validatedData['top_suburb_sales'] ?? null,
+                'rea_link'                 => $validatedData['rea_link'],
+                'agency_id'                => $agency->id,
             ];
 
             // Create the agent
@@ -120,36 +120,37 @@ class ProcessData extends Controller
      * Validate the incoming request data.
      *
      * @param Request $request
+     *
      * @return array
      * @throws ValidationException
      */
     private function validateData(Request $request)
     {
         return $request->validate([
-                                      'rea_id' => 'required|unique:agents,agent_id',
-                                      'candidate_name' => 'required|string',
-                                      'first_name' => 'required|string',
-                                      'last_name' => 'required|string',
-                                      'mobile' => 'nullable|string|max:20',
-                                      'email' => 'nullable|string|email',
-                                      'position' => 'nullable|string',
-                                      'job_title' => 'nullable|string',
-                                      'years_experience' => 'nullable|string',
-                                      'median_price' => 'nullable|string',
-                                      'sales_count_as_lead' => 'nullable|integer',
-                                      'secondary_sales' => 'nullable|integer',
-                                      'number_of_5_star_reviews' => 'nullable|integer',
-                                      'oldest_transaction_date' => 'nullable|date',
-                                      'latest_transaction_date' => 'nullable|date',
-                                      'top_suburb_sales' => 'nullable|string',
-                                      'rea_link' => 'required|string',
-                                      'agency_url' => 'required|string', // Full URL provided here
-                                      'agency_address' => 'nullable|string',
-                                      'agency_id' => 'nullable|integer|exists:agencies,id',
-                                      'number_of_people' => 'nullable|integer',
-                                      'properties_sold' => 'nullable|integer',
-                                      'properties_leased' => 'nullable|integer',
-                                  ]);
+            'rea_id'                   => 'required|unique:agents,agent_id',
+            'candidate_name'           => 'required|string',
+            'first_name'               => 'required|string',
+            'last_name'                => 'nullable|string',
+            'mobile'                   => 'nullable|string|max:20',
+            'email'                    => 'nullable|string|email',
+            'position'                 => 'nullable|string',
+            'job_title'                => 'nullable|string',
+            'years_experience'         => 'nullable|string',
+            'median_price'             => 'nullable|string',
+            'sales_count_as_lead'      => 'nullable|integer',
+            'secondary_sales'          => 'nullable|integer',
+            'number_of_5_star_reviews' => 'nullable|integer',
+            'oldest_transaction_date'  => 'nullable|date',
+            'latest_transaction_date'  => 'nullable|date',
+            'top_suburb_sales'         => 'nullable|string',
+            'rea_link'                 => 'required|string',
+            'agency_url'               => 'required|string', // Full URL provided here
+            'agency_address'           => 'nullable|string',
+            'agency_id'                => 'nullable|integer|exists:agencies,id',
+            'number_of_people'         => 'nullable|integer',
+            'properties_sold'          => 'nullable|integer',
+            'properties_leased'        => 'nullable|integer',
+        ]);
     }
 
     /**
