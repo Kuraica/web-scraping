@@ -44,8 +44,20 @@
     <h1>Data Scraping Control Panel</h1>
     <h3>Processing agents data in descending order</h3>
 
+    <!-- Navigation Links -->
+    <nav class="mb-4">
+        <a href="{{ url('get-first-agents') }}" class="btn btn-outline-primary btn-sm">Ascending order</a>
+        <a href="{{ url('get-last-agents') }}" class="btn btn-outline-primary btn-sm">Descending order</a>
+        <a href="{{ route('export.agents') }}" class="btn btn-outline-primary btn-sm">Export Agents</a>
+    </nav>
+
     <div class="mb-3">
         <input type="text" name="extension_id" id="ext-id" class="form-control" placeholder="Enter Extension ID">
+    </div>
+
+    <!-- Email input field -->
+    <div class="mb-3">
+        <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email" value="{{ $email ?? '' }}">
     </div>
 
     <button class="btn btn-primary btn-custom" onclick="startScraping()">Start Data Scraping</button>
@@ -56,9 +68,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
     /**
+     * Validates email and sends it to the server.
+     */
+    function validateAndSaveEmail() {
+        const email = document.getElementById('email').value.trim();
+        if (!email || !validateEmail(email)) {
+            alert('Please enter a valid email.');
+            return false;
+        }
+
+        fetch('/api/update-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Email updated successfully.');
+                } else {
+                    console.error('Failed to update email.');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating email:', error);
+            });
+
+        return true;
+    }
+
+    /**
+     * Validates email format.
+     */
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    /**
      * Starts the data scraping process by sending a message to the extension.
      */
     function startScraping() {
+
+        if (!validateAndSaveEmail()) return;
+
         const extensionId = document.getElementById('ext-id').value.trim();
         if (!extensionId) {
             alert('Please enter a valid Extension ID.');
@@ -107,6 +162,9 @@
      * Continues the data scraping process by fetching the last processed URL and sending it to the extension.
      */
     function continueScraping() {
+
+        if (!validateAndSaveEmail()) return;
+
         const extensionId = document.getElementById('ext-id').value.trim();
         if (!extensionId) {
             alert('Please enter a valid Extension ID.');

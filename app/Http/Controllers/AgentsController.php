@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\AgentsReportMail;
 use App\Models\Agent;
+use App\Models\Email;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Exports\AgentsExport;
@@ -15,12 +16,18 @@ class AgentsController
 
     public function getFirstAgents(Request $request)
     {
-        return view('scraping-asc');
+        $email = Email::latest()->value('email');
+
+        // Pass the email value to the view
+        return view('scraping-asc', ['email' => $email]);
     }
 
     public function getLastAgents(Request $request)
     {
-        return view('scraping-desc');
+        $email = Email::latest()->value('email');
+
+        // Pass the email value to the view
+        return view('scraping-desc', ['email' => $email]);
     }
 
     public function checkAgent(string $agentId)

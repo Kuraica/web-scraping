@@ -2,3 +2,5 @@
 !public/
 !.gitignore
 !regions.json
+!agents*
+!agenc*

@@ -27,16 +27,19 @@ class ProcessData extends Controller
             $agencyUrl = $validatedData['agency_url'];
             $fullAddress = $validatedData['agency_address'] ?? '';
 
-            $pattern = '/^(.*?),\s*(\w{2})\s*(\d{4})$/';
+            // Updated regex pattern to handle complex addresses
+            $pattern = '/^(.*?),\s*([A-Z]{2,3})\s*(\d{4})$/';
 
             $address = null;
             $state = null;
             $postcode = null;
 
             if (preg_match($pattern, $fullAddress, $matches)) {
-                $address = $matches[1];
+                $address = trim($matches[1]);
                 $state = $matches[2];
                 $postcode = $matches[3];
+            } else {
+                Log::warning("Cannot parse address for agency with URL: {$agencyUrl}. Full Address: {$fullAddress}");
             }
 
             // Agency data

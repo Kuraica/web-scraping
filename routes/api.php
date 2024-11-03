@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\AgentsController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ErrorController;
 use App\Http\Controllers\RegionsController;
 use App\Http\Controllers\ProcessData;
@@ -34,5 +35,6 @@ Route::post('/update-process', [ProcessedUrlsController::class, 'update']);
 Route::post('/check-agency', [AgencyController::class, 'checkAgency']);
 
 Route::post('/log-error', [ErrorController::class, 'logError']);
+Route::post('/update-email', [EmailController::class, 'updateEmail'])->name('update.email');
 
 
