@@ -13,6 +13,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        // Deleting 'today.log' every day at midnight
+        $schedule->call(function () {
+            file_put_contents(storage_path('logs/today.log'), '');
+        })->daily();
     }
 
     /**

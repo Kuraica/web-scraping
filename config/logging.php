@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['daily_tailable', 'hourly_logs'],
             'ignore_exceptions' => false,
         ],
 
@@ -63,6 +63,22 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+        ],
+
+        // Hourly logging in folders by day
+        'hourly_logs' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/' . date('Y-m-d') . '/laravel_hourly.log'),
+            'level' => 'debug',
+            'days' => 100,
+            'tap' => [App\Logging\HourlyLogRotation::class], // Additional custom class for hourly rotation
+        ],
+
+        // Dnevni log koji se briše svakog dana
+        'daily_tailable' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/today.log'),
+            'level' => 'debug',
         ],
 
         'daily' => [

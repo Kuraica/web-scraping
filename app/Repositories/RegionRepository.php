@@ -11,10 +11,26 @@ class RegionRepository
      *
      * @return Region|null
      */
+    public function getRandUnscrapedUnprocessedRegion()
+    {
+        return Region::where('type', 'region')
+            ->where('scraped', 0)
+            ->whereIn('state', ['VIC', 'QLD', 'NSW'])
+            ->whereNull('processed_by')
+            ->inRandomOrder()
+            ->first();
+    }
+    /**
+     * Get first region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
+     *
+     * @return Region|null
+     */
     public function getFirstUnscrapedRegion()
     {
         return Region::where('type', 'region')
             ->where('scraped', 0)
+            ->whereIn('state', ['VIC', 'QLD', 'NSW'])
+            ->whereNull('processed_by')
             ->orderBy('id', 'asc')
             ->first();
     }
@@ -28,6 +44,8 @@ class RegionRepository
     {
         return Region::where('type', 'region')
             ->where('scraped', 0)
+            ->whereIn('state', ['VIC', 'QLD', 'NSW'])
+            ->whereNull('processed_by')
             ->orderBy('id', 'desc')
             ->first();
     }

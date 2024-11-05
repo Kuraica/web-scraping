@@ -14,6 +14,14 @@ use Maatwebsite\Excel\Facades\Excel;
 class AgentsController
 {
 
+    public function getAgents(Request $request)
+    {
+        $email = Email::latest()->value('email');
+
+        // Pass the email value to the view
+        return view('scraping', ['email' => $email]);
+    }
+
     public function getFirstAgents(Request $request)
     {
         $email = Email::latest()->value('email');

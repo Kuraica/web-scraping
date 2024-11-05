@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProcessedUrl;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -35,6 +36,12 @@ class ProcessedUrlsController
             'region_id' => $validatedData['region_id'],
         ]);
 
+        $region = Region::find($validatedData['region_id']);
+        if ($region) {
+            $region->processed_by = $validatedData['order'];
+            $region->save();
+            Log::info("Region with ID {$region->id} updated with processed_by: {$validatedData['order']}");
+        }
 
         return response()->json([
             'success' => true,

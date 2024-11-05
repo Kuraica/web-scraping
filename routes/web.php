@@ -19,6 +19,7 @@ Route::get('/', function () {
 });
 
 
+Route::get('get-agents', [AgentsController::class, 'getAgents']);
 Route::get('get-first-agents', [AgentsController::class, 'getFirstAgents']);
 Route::get('get-last-agents', [AgentsController::class, 'getLastAgents']);
 Route::get('/export-agents', [AgentsController::class, 'export'])->name('export.agents');
