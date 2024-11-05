@@ -32,6 +32,7 @@ class AgencyController extends Controller
                     'exists'  => true,
                     'data'    => [
                         'agency_id'         => $agency->id,
+                        'agency_name'       => $agency->agency_name,
                         'agency_address'    => $agency->full_address,
                         'number_of_people'  => $agency->number_of_people,
                         'properties_sold'   => $agency->properties_sold,
@@ -56,16 +57,70 @@ class AgencyController extends Controller
     }
 
     /**
-     * Helper function to extract the agency URL fragment from the full URL.
+     * Vrati listu agencija koje treba ažurirati
      */
-    private function extractAgencyUrlFragment($fullAgencyUrl)
+    public function getAgenciesToUpdate()
     {
-        // Use regex to extract the part after /agency/
-        if (preg_match('/agency\/([^\/]+)/', $fullAgencyUrl, $matches)) {
-            return $matches[1];  // Return the fragment after /agency/
+        // Dobij do 100 agencija koje treba ažurirati
+        $agencies = Agency::select('id', 'agency_url')
+            ->whereBetween('id', [401, 800])
+//            ->limit(100)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'agencies' => $agencies
+        ]);
+    }
+
+    /**
+     * Ažuriraj podatke o agenciji
+     */
+    public function updateAgencyData(Request $request)
+    {
+        Log::info('updateAgencyData start process:', []);
+        $validatedData = $request->validate([
+            'agency_id'         => 'required|integer|exists:agencies,id',
+            'agency_url'        => 'required|url',
+            'agency_name'       => 'nullable|string|max:255',
+            'agency_address'    => 'nullable|string|max:255',
+            'number_of_people'  => 'nullable|integer',
+            'properties_sold'   => 'nullable|integer',
+            'properties_leased' => 'nullable|integer',
+        ]);
+        Log::info('updateAgencyData update data:', $validatedData);
+
+        $fullAddress = $validatedData['agency_address'] ?? '';
+
+        // Updated regex pattern to handle complex addresses
+        $pattern = '/^(.*?),\s*([^,]+?),\s*([A-Z]{2,3})\s*(\d{4})$/';
+
+        $address = null;
+        $state = null;
+        $postcode = null;
+
+        if (preg_match($pattern, $fullAddress, $matches)) {
+            $address = trim($matches[2]);
+            $state = $matches[3];
+            $postcode = $matches[4];
+        } else {
+            Log::warning("Cannot parse address for agency with URL: {$validatedData['agency_url']}. Full Address: {$fullAddress}");
         }
 
-        // If the fragment can't be extracted, return the full URL (or handle it as needed)
-        return $fullAgencyUrl;
+        $agency = Agency::find($validatedData['agency_id']);
+        $agency->agency_url = $validatedData['agency_url'];
+        $agency->agency_name = $validatedData['agency_name'];
+        $agency->address = $address;
+        $agency->state = $state;
+        $agency->postcode = $postcode;
+        $agency->full_address = $validatedData['agency_address'];
+        $agency->number_of_people = $validatedData['number_of_people'] ?? null;
+        $agency->properties_sold = $validatedData['properties_sold'] ?? null;
+        $agency->properties_leased = $validatedData['properties_leased'] ?? null;
+        $agency->save();
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

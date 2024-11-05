@@ -28,19 +28,27 @@ class ProcessData extends Controller
             $fullAddress = $validatedData['agency_address'] ?? '';
 
             // Updated regex pattern to handle complex addresses
-            $pattern = '/^(.*?),\s*([A-Z]{2,3})\s*(\d{4})$/';
+            $pattern = '/^(.*?),\s*([^,]+?),\s*([A-Z]{2,3})\s*(\d{4})$/';
 
             $address = null;
             $state = null;
             $postcode = null;
 
             if (preg_match($pattern, $fullAddress, $matches)) {
-                $address = trim($matches[1]);
-                $state = $matches[2];
-                $postcode = $matches[3];
+                $address = trim($matches[2]);
+                $state = $matches[3];
+                $postcode = $matches[4];
             } else {
                 Log::warning("Cannot parse address for agency with URL: {$agencyUrl}. Full Address: {$fullAddress}");
             }
+
+            if (empty($validatedData['agency_name'])) {
+                // Parse agency name from agency_url
+                $agencyName = $this->extractAgencyNameFromUrl($agencyUrl);
+            } else {
+                $agencyName = $validatedData['agency_name'];
+            }
+
 
             // Agency data
             $agencyData = [
@@ -49,6 +57,7 @@ class ProcessData extends Controller
                 'address'           => $address,
                 'state'             => $state,
                 'postcode'          => $postcode,
+                'agency_name'       => $agencyName,
                 'number_of_people'  => $validatedData['number_of_people'] ?? null,
                 'properties_sold'   => $validatedData['properties_sold'] ?? null,
                 'properties_leased' => $validatedData['properties_leased'] ?? null,
@@ -120,6 +129,27 @@ class ProcessData extends Controller
     }
 
     /**
+     * Extracts the agency name from the agency URL.
+     */
+    private function extractAgencyNameFromUrl($agencyUrl)
+    {
+        // Match everything after "agency/" up to the last "-"
+        $pattern = '/agency\/(.+?)-[^-]+$/';
+
+        if (preg_match($pattern, $agencyUrl, $matches)) {
+            // Replace remaining "-" characters with spaces
+            $agencyName = str_replace('-', ' ', $matches[1]);
+
+            // Capitalize each word
+            $agencyName = ucwords(strtolower($agencyName));
+
+            return $agencyName;
+        }
+
+        return null;
+    }
+
+    /**
      * Validate the incoming request data.
      *
      * @param Request $request
@@ -147,6 +177,7 @@ class ProcessData extends Controller
             'latest_transaction_date'  => 'nullable|date',
             'top_suburb_sales'         => 'nullable|string',
             'rea_link'                 => 'required|string',
+            'agency_name'              => 'nullable|string',
             'agency_url'               => 'required|string', // Full URL provided here
             'agency_address'           => 'nullable|string',
             'agency_id'                => 'nullable|integer|exists:agencies,id',
@@ -154,17 +185,5 @@ class ProcessData extends Controller
             'properties_sold'          => 'nullable|integer',
             'properties_leased'        => 'nullable|integer',
         ]);
-    }
-
-    /**
-     * Extracts the agency URL fragment from the full URL.
-     */
-    private function extractAgencyUrlFragment($agencyUrl)
-    {
-        // Use regex to extract the part after /agency/
-        if (preg_match('/agency\/([^\/]+)/', $agencyUrl, $matches)) {
-            return $matches[1]; // The part after /agency/
-        }
-        return null;
     }
 }

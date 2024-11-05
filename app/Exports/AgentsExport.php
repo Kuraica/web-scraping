@@ -22,8 +22,8 @@ class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             'agents.full_name as candidate_name',
             'agents.first_name',
             'agents.last_name',
-            'agents.email',
-            'agencies.agency_url as agency',
+            'agents.mobile',
+            'agencies.agency_name as agency',
             'agents.job_title',
             'agents.years_experience',
             'agencies.full_address as agency_address',
@@ -44,6 +44,7 @@ class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             'agents.rea_link'
         )
             ->join('agencies', 'agents.agency_id', '=', 'agencies.id')
+//            ->where('agents.agency_id', '<', 2000)
             ->get();
     }
 
@@ -57,7 +58,7 @@ class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             'Candidate Name',
             'First Name',
             'Last Name',
-            'Email',
+            'Mobile',
             'Agency',
             'Job Title',
             'Years Experience',

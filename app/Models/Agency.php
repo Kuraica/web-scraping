@@ -11,6 +11,7 @@ class Agency extends Model
     use HasFactory;
 
     protected $fillable = [
+        'agency_name',
         'agency_url',
         'full_address',
         'address',

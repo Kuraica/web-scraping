@@ -34,6 +34,9 @@ Route::get('/continue-scraping/{order}', [ProcessedUrlsController::class, 'conti
 Route::post('/update-process', [ProcessedUrlsController::class, 'update']);
 Route::post('/check-agency', [AgencyController::class, 'checkAgency']);
 
+Route::get('/get-agencies-to-update', [AgencyController::class, 'getAgenciesToUpdate']);
+Route::post('/update-agency-data', [AgencyController::class, 'updateAgencyData']);
+
 Route::post('/log-error', [ErrorController::class, 'logError']);
 Route::post('/update-email', [EmailController::class, 'updateEmail'])->name('update.email');
 
