@@ -44,8 +44,8 @@ class AgentsController
 
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 
-//        if ($agentExists || in_array($agentId, ['1303653', '3488936', '2975075', '3479700', '2474082'])) {
-        if ($agentExists) {
+        if ($agentExists || in_array($agentId, ['1653210', '54398', '3402060', '2532634'])) {
+//        if ($agentExists) {
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);

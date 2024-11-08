@@ -82,8 +82,8 @@ class ProcessData extends Controller
             $agentData = [
                 'agent_id'                 => $validatedData['rea_id'],
                 'full_name'                => $validatedData['candidate_name'],
-                'first_name'               => $validatedData['first_name'],
-                'last_name'                => $validatedData['last_name'],
+                'first_name'               => $validatedData['first_name'] ?? 'Not provided',
+                'last_name'                => $validatedData['last_name'] ?? 'Not provided',
                 'mobile'                   => $validatedData['mobile'] ?? null,
                 'email'                    => $validatedData['email'] ?? null,
                 'position'                 => $validatedData['position'] ?? null,
@@ -162,7 +162,7 @@ class ProcessData extends Controller
         return $request->validate([
             'rea_id'                   => 'required|unique:agents,agent_id',
             'candidate_name'           => 'required|string',
-            'first_name'               => 'required|string',
+            'first_name'               => 'nullable|string',
             'last_name'                => 'nullable|string',
             'mobile'                   => 'nullable|string|max:20',
             'email'                    => 'nullable|string|email',

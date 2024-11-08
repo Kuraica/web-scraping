@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily_tailable', 'hourly_logs'],
+            'channels' => ['daily'],
             'ignore_exceptions' => false,
         ],
 
