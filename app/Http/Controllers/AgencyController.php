@@ -63,7 +63,8 @@ class AgencyController extends Controller
     {
         // Dobij do 100 agencija koje treba ažurirati
         $agencies = Agency::select('id', 'agency_url')
-            ->whereBetween('id', [401, 800])
+//            ->whereBetween('id', [401, 800])
+            ->whereNull('address')
 //            ->limit(100)
             ->get();
 

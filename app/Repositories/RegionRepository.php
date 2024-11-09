@@ -7,11 +7,11 @@ use App\Models\Region;
 class RegionRepository
 {
     /**
-     * Get first region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
+     * Get rand region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
      *
      * @return Region|null
      */
-    public function getRandUnscrapedUnprocessedRegion()
+    public function getRandUnscrapedUnprocessedRegionHightPririty()
     {
         return Region::where('type', 'region')
             ->where('scraped', 0)
@@ -20,6 +20,21 @@ class RegionRepository
             ->inRandomOrder()
             ->first();
     }
+
+    /**
+     * Get rand region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
+     *
+     * @return Region|null
+     */
+    public function getRandUnscrapedUnprocessedRegion()
+    {
+        return Region::where('type', 'region')
+            ->where('scraped', 0)
+            ->whereNull('processed_by')
+            ->inRandomOrder()
+            ->first();
+    }
+
     /**
      * Get first region where type = 'region' i scraped = 0, sorted by ID-u in ascending order
      *

@@ -27,18 +27,12 @@ class RegionsController extends Controller
 
     public function getRegion(string $order): JsonResponse
     {
-        $return = $this->getNextRegion();
-
-        if ($order === 'desc') {
-            $return = $this->getLastRegion();
-        }
-
-        return $return;
+        return $this->getNextRegion();
     }
 
     public function getNextRegion(): JsonResponse
     {
-        $region = $this->repository->getFirstUnscrapedRegion();
+        $region = $this->repository->getRandUnscrapedUnprocessedRegionHightPririty() ?? $this->repository->getRandUnscrapedUnprocessedRegion();
         Log::info('Get next region: ', [$region]);
         if ($region) {
             return response()->json([
