@@ -9,12 +9,18 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-
 class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
 {
+    protected $state;
+
+    public function __construct($state)
+    {
+        $this->state = $state;
+    }
+
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         return Agent::select(
@@ -44,7 +50,9 @@ class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             'agents.rea_link'
         )
             ->join('agencies', 'agents.agency_id', '=', 'agencies.id')
-//            ->where('agents.agency_id', '<', 2000)
+            ->where('agencies.state', $this->state)
+            ->orderBy('agencies.agency_name', 'asc')
+            ->orderBy('agents.first_name', 'asc')
             ->get();
     }
 
@@ -84,7 +92,6 @@ class AgentsExport implements FromCollection, WithHeadings, ShouldAutoSize, With
     public function styles(Worksheet $sheet)
     {
         return [
-            // First column bold
             1 => ['font' => ['bold' => true]]
         ];
     }

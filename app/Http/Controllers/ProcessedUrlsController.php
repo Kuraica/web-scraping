@@ -38,8 +38,9 @@ class ProcessedUrlsController
 
         $region = Region::find($validatedData['region_id']);
         if ($region) {
-            $region->processed_by = $validatedData['order'];
-            $region->save();
+            $region->update([
+                'processed_by' => $validatedData['order']
+            ]);
             Log::info("Region with ID {$region->id} updated with processed_by: {$validatedData['order']}");
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AgentsReportMail;
+use App\Models\Agency;
 use App\Models\Agent;
 use App\Models\Email;
 use Illuminate\Http\Request;
@@ -59,7 +60,16 @@ class AgentsController
      */
     public function export()
     {
-        return Excel::download(new AgentsExport, 'agents_agencies.xlsx');
+        $states = Agency::distinct()->pluck('state');
+
+        foreach ($states as $state) {
+            $fileName = 'agents_agencies_' . $state . '.xlsx';
+
+            // Generiši Excel fajl za trenutni state
+            Excel::store(new AgentsExport($state), $fileName, 'public'); // 'public' storage disk
+
+            echo "Generated report for state: {$state}, saved as {$fileName}\n";
+        }
     }
 
     public function sendAgentsReport()
