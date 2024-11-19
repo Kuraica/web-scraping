@@ -164,7 +164,7 @@ class ProcessData extends Controller
             'candidate_name'           => 'required|string',
             'first_name'               => 'nullable|string',
             'last_name'                => 'nullable|string',
-            'mobile'                   => 'nullable|string|max:20',
+            'mobile'                   => 'nullable|string|max:100',
             'email'                    => 'nullable|string|email',
             'position'                 => 'nullable|string',
             'job_title'                => 'nullable|string',

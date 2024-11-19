@@ -45,8 +45,8 @@ class AgentsController
 
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 
-        if ($agentExists || in_array($agentId, ['1653210', '54398', '3402060', '2532634'])) {
-//        if ($agentExists) {
+//        if ($agentExists || in_array($agentId, ['1653210', '54398', '3402060', '2532634'])) {
+        if ($agentExists) {
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);
@@ -60,6 +60,9 @@ class AgentsController
      */
     public function export()
     {
+        ini_set('memory_limit', '1024M');
+        set_time_limit(0);
+
         $states = Agency::distinct()->pluck('state');
 
         foreach ($states as $state) {
@@ -68,6 +71,7 @@ class AgentsController
             // Generiši Excel fajl za trenutni state
             Excel::store(new AgentsExport($state), $fileName, 'public'); // 'public' storage disk
 
+            Log::info("Generated report for state: {$state}, saved as {$fileName}\n", []);
             echo "Generated report for state: {$state}, saved as {$fileName}\n";
         }
     }

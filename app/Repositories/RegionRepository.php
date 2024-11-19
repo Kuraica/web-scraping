@@ -13,7 +13,8 @@ class RegionRepository
      */
     public function getRandUnscrapedUnprocessedRegionHightPririty()
     {
-        return Region::where('type', 'region')
+//        return Region::where('type', 'region')
+        return Region::where('type', 'suburb')
             ->where('scraped', 0)
             ->whereIn('state', ['VIC', 'QLD', 'NSW'])
             ->whereNull('processed_by')
@@ -28,7 +29,8 @@ class RegionRepository
      */
     public function getRandUnscrapedUnprocessedRegion()
     {
-        return Region::where('type', 'region')
+//        return Region::where('type', 'region')
+        return Region::where('type', 'suburb')
             ->where('scraped', 0)
             ->whereNull('processed_by')
             ->inRandomOrder()
