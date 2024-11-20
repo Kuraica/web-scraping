@@ -29,7 +29,7 @@ Route::post('/send-data', [ProcessData::class, 'process']);
 Route::get('/test-get-region/{query}', [RegionsController::class, 'check']);
 Route::get('/get-next-region/{order}', [RegionsController::class, 'getRegion']);
 Route::post('/update-processed-region/{region}', [RegionsController::class, 'updateProcessedRegion']);
-Route::get('/check-agent/{agent}', [AgentsController::class, 'checkAgent']);
+Route::get('/check-agent/{agent}/{url?}', [AgentsController::class, 'checkAgent']);
 Route::get('/continue-scraping/{order}', [ProcessedUrlsController::class, 'continueScraping']);
 Route::post('/update-process', [ProcessedUrlsController::class, 'update']);
 Route::post('/check-agency', [AgencyController::class, 'checkAgency']);

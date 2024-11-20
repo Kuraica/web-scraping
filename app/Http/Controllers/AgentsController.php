@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\AgentsReportMail;
 use App\Models\Agency;
 use App\Models\Agent;
+use App\Models\AgentCheck;
 use App\Models\Email;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -39,16 +40,27 @@ class AgentsController
         return view('scraping-desc', ['email' => $email]);
     }
 
-    public function checkAgent(string $agentId)
+    public function checkAgent(string $agentId, string $url = null)
     {
         Log::info('Agent id za proveru: ', [$agentId]);
 
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 
-//        if ($agentExists || in_array($agentId, ['1653210', '54398', '3402060', '2532634'])) {
         if ($agentExists) {
             return response()->json(['success' => true]);
         } else {
+
+            $agentCheckExists = AgentCheck::where('agent_id', $agentId)->exists();
+
+            if (!$agentCheckExists) {
+                // Upisujemo podatke u agentCheck tabelu
+                AgentCheck::create([
+                    'agent_id' => $agentId,
+                    'agent_url' => $url,
+                ]);
+                Log::info('Upisan agent u agentCheck tabelu: ', ['agent_id' => $agentId, 'agent_url' => $url]);
+            }
+
             return response()->json(['success' => false]);
         }
     }
