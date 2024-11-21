@@ -3,34 +3,33 @@
 namespace App\Imports;
 
 use App\Models\PreviouslyProcessedAgent;
-use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
-use Maatwebsite\Excel\Row;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class RealEstateAgentImport implements OnEachRow, WithChunkReading, WithMultipleSheets
+class RealEstateAgentImport implements ToModel, WithHeadingRow, WithChunkReading, WithUpserts, WithProgressBar
 {
+    use Importable;
+
     /**
      * Obrada svakog reda iz Excel fajla.
      */
-    public function onRow(Row $row)
+    public function model(array $row): PreviouslyProcessedAgent
     {
-        $data = $row->toArray();
 
-        // Čuvanje podataka u tabelu
-        PreviouslyProcessedAgent::updateOrCreate(
-            ['rea_id' => $data['REA ID']],
-            [
-                'candidate_name' => $data['Candidate Name'],
-                'first_name' => $data['First Name'],
-                'last_name' => $data['Last Name'],
-                'mobile' => $data['Mobile'] ?? null,
-                'agency' => $data['Agency'] ?? null,
-                'rea_link' => $data['REA Link'] ?? null,
-                'agency_suburb' => $data['Agency Suburb'] ?? null,
-                'state' => $data['State'] ?? null,
-            ]
-        );
+        return new PreviouslyProcessedAgent([
+                                                'rea_id'         => $row['rea_id'],
+                                                'candidate_name' => $row['candidate_name'] ?? 'Unknown',
+                                                'first_name'     => $row['first_name'] ?? 'Unknown',
+                                                'last_name'      => $row['last_name'] ?? 'Unknown',
+                                                'agency'         => $row['agency'] ?? 'Unknown',
+                                                'agency_suburb'  => $row['agency_suburb'] ?? 'Unknown',
+                                                'state'          => $row['state'] ?? 'Unknown',
+                                                'rea_link'       => $row['rea_link'],
+                                            ]);
     }
 
     /**
@@ -38,21 +37,14 @@ class RealEstateAgentImport implements OnEachRow, WithChunkReading, WithMultiple
      */
     public function chunkSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     /**
-     * Sheetovi za obradu.
+     * @return string|array
      */
-    public function sheets(): array
+    public function uniqueBy()
     {
-        return [
-            'ACT' => $this,
-            'NSW' => $this,
-            'QLD' => $this,
-            'SA'  => $this,
-            'VIC' => $this,
-            'WA'  => $this,
-        ];
+        return 'rea_id';
     }
 }

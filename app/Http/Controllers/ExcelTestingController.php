@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Row;
 
 class ExcelTestingController extends Controller implements OnEachRow, WithChunkReading
@@ -18,7 +19,6 @@ class ExcelTestingController extends Controller implements OnEachRow, WithChunkR
      */
     public function testRows()
     {
-        dd('test');
         ini_set('max_execution_time', 300); // 5 minuta
         ini_set('memory_limit', '512M');   // 512 MB
 
@@ -27,7 +27,8 @@ class ExcelTestingController extends Controller implements OnEachRow, WithChunkR
         if (!file_exists($filePath)) {
             return response()->json(['error' => 'File not found'], 404);
         }
-
+        $headings = (new HeadingRowImport)->toArray($filePath);
+        dd($headings);
         // Procesuiranje fajla u chunkovima
         Excel::import($this, $filePath);
 
