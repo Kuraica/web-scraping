@@ -37,6 +37,9 @@ Route::post('/check-agency', [AgencyController::class, 'checkAgency']);
 Route::get('/get-agencies-to-update', [AgencyController::class, 'getAgenciesToUpdate']);
 Route::post('/update-agency-data', [AgencyController::class, 'updateAgencyData']);
 
+Route::get('/get-next-agency', [AgencyController::class, 'getNextAgency']);
+Route::post('/update-processed-region/{region}', [RegionsController::class, 'updateProcessedRegion']);
+
 Route::post('/log-error', [ErrorController::class, 'logError']);
 Route::post('/update-email', [EmailController::class, 'updateEmail'])->name('update.email');
 

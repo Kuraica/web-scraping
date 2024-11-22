@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Email;
+use App\Repositories\AgencyRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Agency;
 use Illuminate\Support\Facades\Log;
 
 class AgencyController extends Controller
 {
+    public function __construct(
+        public readonly AgencyRepository $repository,
+        public readonly Agency $agency
+    )
+    {
+    }
+
     public function checkAgency(Request $request)
     {
         try {
@@ -66,12 +76,38 @@ class AgencyController extends Controller
 //            ->whereBetween('id', [401, 800])
             ->whereNull('address')
 //            ->limit(100)
-            ->get();
+->get();
 
         return response()->json([
-            'success' => true,
+            'success'  => true,
             'agencies' => $agencies
         ]);
+    }
+
+    public function getAgency(Request $request)
+    {
+        return view('get-agency');
+    }
+
+    /**
+     * Dohvati prvu agenciju za proveru
+     */
+    public function getNextAgency(): JsonResponse
+    {
+        $agency = $this->repository->getRandUnscrapedUnprocessedAgencyHightPririty() ?? $this->repository->getRandUnscrapedUnprocessedAgency();
+        Log::info('Get next agency: ', [$agency]);
+        if ($agency) {
+            return response()->json([
+                'success' => true,
+                'agency'  => $agency,
+                'url'     => $agency->agency_url,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No agency found',
+            ]);
+        }
     }
 
     /**
@@ -84,6 +120,7 @@ class AgencyController extends Controller
             'agency_id'         => 'required|integer|exists:agencies,id',
             'agency_url'        => 'required|url',
             'agency_name'       => 'nullable|string|max:255',
+            'agency_website'    => 'nullable|string|max:255',
             'agency_address'    => 'nullable|string|max:255',
             'number_of_people'  => 'nullable|integer',
             'properties_sold'   => 'nullable|integer',
@@ -111,6 +148,7 @@ class AgencyController extends Controller
         $agency = Agency::find($validatedData['agency_id']);
         $agency->agency_url = $validatedData['agency_url'];
         $agency->agency_name = $validatedData['agency_name'];
+        $agency->agency_website = $validatedData['agency_website'];
         $agency->address = $address;
         $agency->state = $state;
         $agency->postcode = $postcode;

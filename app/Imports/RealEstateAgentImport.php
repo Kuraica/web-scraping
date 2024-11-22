@@ -29,6 +29,7 @@ class RealEstateAgentImport implements ToModel, WithHeadingRow, WithChunkReading
                                                 'agency_suburb'  => $row['agency_suburb'] ?? 'Unknown',
                                                 'state'          => $row['state'] ?? 'Unknown',
                                                 'rea_link'       => $row['rea_link'],
+                                                'mobile'       => $row['mobile'] ?? 'Unknown',
                                             ]);
     }
 
