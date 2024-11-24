@@ -115,6 +115,7 @@ class AgencyController extends Controller
      */
     public function updateAgencyData(Request $request)
     {
+        $request->dd();
         Log::info('updateAgencyData start process:', []);
         $validatedData = $request->validate([
             'agency_id'         => 'required|integer|exists:agencies,id',
