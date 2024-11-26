@@ -96,6 +96,7 @@ class AgencyController extends Controller
     {
         $agency = $this->repository->getRandUnscrapedUnprocessedAgencyHightPririty() ?? $this->repository->getRandUnscrapedUnprocessedAgency();
         Log::info('Get next agency: ', [$agency]);
+//        $agency = $this->repository->returnSpecific(55);
         if ($agency) {
             return response()->json([
                 'success' => true,
@@ -115,8 +116,7 @@ class AgencyController extends Controller
      */
     public function updateAgencyData(Request $request)
     {
-        $request->dd();
-        Log::info('updateAgencyData start process:', []);
+        Log::info('updateAgencyData start process:', $request->all());
         $validatedData = $request->validate([
             'agency_id'         => 'required|integer|exists:agencies,id',
             'agency_url'        => 'required|url',
@@ -162,5 +162,26 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true
         ]);
+    }
+
+    public function updateProcessedAgency(Request $request)
+    {
+        $agencyId = $request->input('agency_id');
+        $order = $request->input('order');
+
+        if (!$agencyId || !$order) {
+            return response()->json(['success' => false, 'message' => 'Missing agency_id or order'], 400);
+        }
+
+        $agency = Agency::find($agencyId);
+        if (!$agency) {
+            return response()->json(['success' => false, 'message' => 'Agency not found'], 404);
+        }
+
+        $agency->processed_by = $order;
+        $agency->scraped = 1;
+        $agency->save();
+
+        return response()->json(['success' => true, 'message' => 'Agency marked as scraped'], 200);
     }
 }

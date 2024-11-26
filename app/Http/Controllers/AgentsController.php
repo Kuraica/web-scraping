@@ -47,6 +47,7 @@ class AgentsController
         $agentExists = Agent::where('agent_id', $agentId)->exists();
 
         if ($agentExists) {
+            Log::info('Agent postoji!', [$agentId]);
             return response()->json(['success' => true]);
         } else {
 
