@@ -69,6 +69,10 @@ class ProcessData extends Controller
                 $agency = Agency::find($validatedData['agency_id']);
                 $agency->update($agencyData);
                 Log::info('Existing agency updated with ID: ' . $agency->id);
+            } elseif (Agency::where('agency_url', $agencyUrl)->exists()) {
+                // Agency exists by agency_url, no update, just retrieve the agency
+                $agency = Agency::where('agency_url', $agencyUrl)->first();
+                Log::info('Agency found by URL with ID: ' . $agency->id);
             } else {
                 // Find or create the agency using the agency_url
                 $agency = Agency::updateOrCreate(
